@@ -15,8 +15,6 @@ import org.openjdk.jmh.annotations.Threads;
 import org.openjdk.jmh.annotations.Timeout;
 import org.openjdk.jmh.annotations.Warmup;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 
 @State(Scope.Benchmark)
@@ -29,13 +27,12 @@ public class SimpleBenchmark {
 
     @Param({"virtual", "kernel"})
     private String threadType;
-    private ThreadFactory threadFactory;
 
     @Param({"io", "nonio"})
     private String taskType;
-    private Task task;
 
-    private ExecutorService executorService;
+    private ThreadFactory threadFactory;
+    private Task task;
 
     @Setup
     public void setup() {
@@ -49,7 +46,6 @@ public class SimpleBenchmark {
             case "nonio" -> task = new NonIOTask();
             default -> throw new IllegalStateException("Unknown task type: " + taskType);
         }
-        executorService = Executors.newCachedThreadPool(threadFactory);
     }
 
     @Benchmark
