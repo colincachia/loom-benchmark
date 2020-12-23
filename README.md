@@ -37,6 +37,10 @@ Available Physical Memory: 7,848 MB
 Virtual Memory: Max Size:  18,173 MB
 Virtual Memory: Available: 7,686 MB
 Virtual Memory: In Use:    10,487 MB
+
+openjdk version "16-loom" 2021-03-16
+OpenJDK Runtime Environment (build 16-loom+9-316)
+OpenJDK 64-Bit Server VM (build 16-loom+9-316, mixed mode, sharing)
 ```
 
 ### Profiler: `gc` (GC profiling via standard MBeans)
@@ -175,3 +179,120 @@ SimpleBenchmark.benchmark:·threads.daemon        nonio        kernel   avgt    
 SimpleBenchmark.benchmark:·threads.started       nonio        kernel   avgt    5  302563.000             threads
 
 ``` 
+
+### Profiler: `stack` (Simple and naive Java stack profiler)
+
+#### `taskType=io`/`threadType=virtual`
+```
+....[Thread state distributions]....................................................................
+ 68.5%         WAITING
+ 23.2%         TIMED_WAITING
+  8.3%         RUNNABLE
+
+....[Thread state: WAITING].........................................................................
+ 68.5% 100.0% jdk.internal.misc.Unsafe.park
+
+....[Thread state: TIMED_WAITING]...................................................................
+ 19.2%  82.6% jdk.internal.misc.Unsafe.park
+  4.0%  17.4% java.lang.Object.wait0
+
+....[Thread state: RUNNABLE]........................................................................
+  4.0%  48.6% <stack is empty, everything is filtered?>
+  4.0%  47.9% sun.nio.ch.WEPoll.wait
+  0.2%   2.2% java.lang.Continuation.run
+  0.0%   0.1% jdk.internal.misc.Unsafe.allocateInstance
+  0.0%   0.0% jdk.internal.net.http.HttpClientImpl$SelectorManager.run
+  0.0%   0.0% jdk.internal.net.http.SocketTube$InternalReadPublisher$InternalReadSubscription.read
+  0.0%   0.0% java.lang.invoke.DirectMethodHandle$Holder.newInvokeSpecial
+  0.0%   0.0% sun.nio.ch.WEPollSelectorImpl.processUpdateQueue
+  0.0%   0.0% sun.nio.ch.SelectorImpl.poll
+  0.0%   0.0% java.util.HashMap.hash
+  0.1%   1.1% <other>
+```
+
+#### `taskType=io`/`threadType=virtual`
+```
+....[Thread state distributions]....................................................................
+ 44.8%         TIMED_WAITING
+ 36.3%         WAITING
+ 19.0%         RUNNABLE
+
+....[Thread state: TIMED_WAITING]...................................................................
+ 35.5%  79.4% jdk.internal.misc.Unsafe.park
+  9.2%  20.6% java.lang.Object.wait0
+
+....[Thread state: WAITING].........................................................................
+ 18.3%  50.4% java.lang.Object.wait0
+ 18.0%  49.6% jdk.internal.misc.Unsafe.park
+
+....[Thread state: RUNNABLE]........................................................................
+  9.3%  48.9% <stack is empty, everything is filtered?>
+  9.1%  48.0% sun.nio.ch.WEPoll.wait
+  0.2%   1.0% java.nio.HeapByteBuffer.<init>
+  0.0%   0.1% sun.nio.ch.SocketDispatcher.writev0
+  0.0%   0.1% sun.nio.ch.SocketDispatcher.read0
+  0.0%   0.1% jdk.internal.misc.Unsafe.allocateInstance
+  0.0%   0.0% java.util.stream.AbstractPipeline.<init>
+  0.0%   0.0% jdk.internal.net.http.HttpClientImpl$SelectorManager.run
+  0.0%   0.0% java.lang.invoke.DirectMethodHandle$Holder.newInvokeSpecial
+  0.0%   0.0% jdk.internal.net.http.MultiExchange.requestFilters
+  0.3%   1.7% <other>
+```
+
+#### `taskType=nonio`/`threadType=virtual`
+```
+....[Thread state distributions]....................................................................
+ 81.1%         WAITING
+ 13.8%         RUNNABLE
+  5.0%         TIMED_WAITING
+
+....[Thread state: WAITING].........................................................................
+ 81.1% 100.0% jdk.internal.misc.Unsafe.park
+
+....[Thread state: RUNNABLE]........................................................................
+  8.0%  58.1% java.lang.Continuation.run
+  5.0%  36.2% <stack is empty, everything is filtered?>
+  0.5%   3.6% jdk.internal.misc.Unsafe.unpark
+  0.1%   0.5% jdk.internal.misc.Unsafe.park
+  0.1%   0.4% java.util.concurrent.ForkJoinPool.scan
+  0.0%   0.2% java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await
+  0.0%   0.2% java.lang.Thread.interrupted
+  0.0%   0.1% com.ixaris.benchmark.suite.SimpleBenchmark.benchmark
+  0.0%   0.1% com.ixaris.benchmark.suite.generated.SimpleBenchmark_benchmark_jmhTest.benchmark_thrpt_jmhStub
+  0.0%   0.1% java.util.concurrent.ForkJoinPool.runWorker
+  0.1%   0.4% <other>
+
+....[Thread state: TIMED_WAITING]...................................................................
+  5.0%  99.6% java.lang.Object.wait0
+  0.0%   0.4% jdk.internal.misc.Unsafe.park
+```
+
+#### `taskType=io`/`threadType=kernel`
+```
+Stack profiler:
+
+....[Thread state distributions]....................................................................
+ 50.7%         RUNNABLE
+ 32.1%         WAITING
+ 17.1%         TIMED_WAITING
+
+....[Thread state: RUNNABLE]........................................................................
+ 31.9%  62.9% <stack is empty, everything is filtered?>
+  5.7%  11.2% java.math.BigInteger.oddModPow
+  3.3%   6.6% sun.nio.ch.SocketDispatcher.write0
+  1.6%   3.1% java.lang.Thread.start0
+  1.0%   2.0% java.security.AccessController.getStackAccessControlContext
+  0.9%   1.8% java.lang.Throwable.fillInStackTrace
+  0.6%   1.1% java.lang.Object.wait0
+  0.5%   0.9% java.security.Provider.getService
+  0.4%   0.8% java.lang.Class.forName0
+  0.3%   0.6% java.security.Provider.newInstanceUtil
+  4.6%   9.0% <other>
+
+....[Thread state: WAITING].........................................................................
+ 30.8%  96.0% java.lang.Object.wait0
+  1.3%   4.0% jdk.internal.misc.Unsafe.park
+
+....[Thread state: TIMED_WAITING]...................................................................
+ 17.1% 100.0% java.lang.Object.wait0
+```
