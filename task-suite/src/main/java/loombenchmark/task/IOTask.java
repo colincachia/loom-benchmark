@@ -9,9 +9,10 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.time.ZonedDateTime;
+import java.util.concurrent.Callable;
 
 @Slf4j
-public class IOTask implements Task {
+public class IOTask implements Task<HttpResponse<String>> {
 
     private final HttpClient httpClient;
 
@@ -22,14 +23,14 @@ public class IOTask implements Task {
     }
 
     @Override
-    public Runnable work() {
+    public Callable<HttpResponse<String>> work() {
         return () -> {
             final HttpRequest request = HttpRequest.newBuilder()
                     .GET()
                     .uri(URI.create("https://httpbin.org/get"))
                     .setHeader("User-Agent", "Loom HttpClient Bot")
                     .build();
-            final HttpResponse<String> response = execute(request);
+            return execute(request);
         };
     }
 

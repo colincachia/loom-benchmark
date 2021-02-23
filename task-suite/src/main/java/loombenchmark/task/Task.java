@@ -1,7 +1,9 @@
 package loombenchmark.task;
 
-public interface Task {
+import java.util.concurrent.Callable;
 
-    Runnable work();
+public interface Task<T> {
+
+    Callable<T> work();
 
 }
